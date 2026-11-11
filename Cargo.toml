@@ -1,0 +1,60 @@
+[package]
+name = "llms-from-scratch-rs"
+description = "Rust (candle) code for Build a LLM From Scratch by Sebastian Raschka"
+version = "0.1.5"
+edition = "2021"
+repository = "https://github.com/nerdai/llms-from-scratch-rs"
+authors = ["Val Andrei Fajardo <andrei@nerdai.io>"]
+keywords = ["machine-learning", "llms", "gpt"]
+categories = ["science"]
+license = "MIT"
+
+exclude = ["data/*"]
+
+[profile.dev]
+opt-level = 1
+debug = 0
+incremental = true
+
+[profile.dev.package."*"]
+opt-level = 2
+
+[dependencies]
+anyhow = "1.0.102"
+bytes = "1.11.1"
+candle-core = "0.9"
+candle-datasets = "0.9"
+candle-nn = "0.9"
+clap = { version = "4.6.1", features = ["derive"] }
+comfy-table = "8.0.0"
+fancy-regex = "0.19.2"
+hf-hub = { version = "1.0.0", features = ["blocking"] }
+itertools = "0.15.0"
+lexical-core = "1.0.6"
+ndarray = "0.17.2"
+phf = { version = "0.14.0", features = ["macros"] }
+plotly = "0.14.1"
+polars = { version = "0.55.2", features = [
+    "csv",
+    "dtype-struct",
+    "lazy",
+    "parquet",
+    "rows",
+    "strings",
+] }
+rand = "0.10.2"
+reqwest = { version = "0.13.4", features = ["blocking", "json"] }
+rstest = "0.28.0"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.150"
+serde_with = "3.20.0"
+sysinfo = "0.39.3"
+tempfile = "3.27.0"
+tiktoken-rs = "0.12.0"
+tokenizers = "0.23.1"
+tqdm = "0.8.0"
+zip = "9.0.4"
+
+[features]
+cuda = ["candle-core/cuda", "candle-nn/cuda"]
+metal = ["candle-core/metal", "candle-nn/metal"]
