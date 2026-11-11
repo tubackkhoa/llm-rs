@@ -16,6 +16,7 @@ use plotly::{Layout, Plot, Scatter};
 use polars::prelude::*;
 use rand::{rng, seq::SliceRandom};
 use std::cmp;
+use std::fs;
 use std::fs::{create_dir_all, remove_file, rename, File};
 use std::io;
 use std::path::{Path, PathBuf};
@@ -592,18 +593,46 @@ pub fn download_and_load_gpt2(
     let dev = crate::candle_addons::gpu_if_available(0)?;
     let model = GPTModel::new(cfg, vb)?;
 
-    // get weights from HF Hub
-    let client = HFClientSync::new().map_err(candle_core::Error::wrap)?;
-    let (owner, name) = split_id(model_id);
-    let weights = client
-        .model(owner, name)
-        .download_file()
-        .filename("model.safetensors")
-        .send()
-        .map_err(candle_core::Error::wrap)?;
-    let weights = candle_core::safetensors::load(weights, &dev)?;
+    // Create local cache directory
+    let cache_dir = PathBuf::from("data");
+    fs::create_dir_all(&cache_dir).map_err(candle_core::Error::wrap)?;
 
-    // load weights
+    // Generate a unique filename based on model_id
+    let model_filename = model_id.replace('/', "_");
+    let weights_path = cache_dir.join(format!("{model_filename}.safetensors"));
+
+    // Download only if model does not exist locally
+    if !weights_path.exists() {
+        println!("Downloading GPT-2 model: {model_id}");
+
+        let client = HFClientSync::new().map_err(candle_core::Error::wrap)?;
+
+        let (owner, name) = split_id(model_id);
+
+        let downloaded = client
+            .model(owner, name)
+            .download_file()
+            .filename("model.safetensors")
+            .send()
+            .map_err(candle_core::Error::wrap)?;
+
+        // Copy to temporary file first
+        let temp_path = weights_path.with_extension("safetensors.tmp");
+
+        fs::copy(&downloaded, &temp_path).map_err(candle_core::Error::wrap)?;
+
+        // Atomic rename
+        fs::rename(&temp_path, &weights_path).map_err(candle_core::Error::wrap)?;
+
+        println!("Model saved to: {}", weights_path.display());
+    } else {
+        println!("Loading cached model: {}", weights_path.display());
+    }
+
+    // Load weights from local storage
+    let weights = candle_core::safetensors::load(&weights_path, &dev)?;
+
+    // Load weights into GPT model
     load_weights_into_gpt(varmap, weights, Some("model"), cfg.n_layers)?;
 
     Ok(model)
