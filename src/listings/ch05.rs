@@ -724,7 +724,7 @@ mod tests {
     use super::*;
     use crate::listings::ch04::{Config, GPTModel};
     use anyhow::Result;
-    use candle_core::{DType, Device};
+    use candle_core::{DType, };
     use candle_nn::{VarBuilder, VarMap};
     use rand::SeedableRng;
     use rstest::*;
@@ -742,7 +742,7 @@ mod tests {
     fn test_text_to_token_ids_and_back_to_text(
         #[from(txt_tokenizer)] (txt, tokenizer): (String, CoreBPE),
     ) -> Result<()> {
-        let token_ids = text_to_token_ids(&txt[..], &tokenizer, &Device::cuda_if_available(0)?)?;
+        let token_ids = text_to_token_ids(&txt[..], &tokenizer, &crate::candle_addons::gpu_if_available(0)?)?;
         let decoded_text = token_ids_to_text(token_ids, &tokenizer)?;
         assert_eq!(decoded_text, txt);
         Ok(())
@@ -752,7 +752,7 @@ mod tests {
     fn test_calc_loss_batch() -> Result<()> {
         // create model
         let varmap = VarMap::new();
-        let vb = VarBuilder::from_varmap(&varmap, DType::F32, &Device::cuda_if_available(0)?);
+        let vb = VarBuilder::from_varmap(&varmap, DType::F32, &crate::candle_addons::gpu_if_available(0)?);
         let cfg = Config::gpt_sm_test();
         let model = GPTModel::new(cfg, vb.pp("model"))?;
 
@@ -769,7 +769,7 @@ mod tests {
     fn test_calc_loss_batch_with_ignore_index() -> Result<()> {
         // create model
         let varmap = VarMap::new();
-        let vb = VarBuilder::from_varmap(&varmap, DType::F32, &Device::cuda_if_available(0)?);
+        let vb = VarBuilder::from_varmap(&varmap, DType::F32, &crate::candle_addons::gpu_if_available(0)?);
         let cfg = Config::gpt_sm_test();
         let model = GPTModel::new(cfg, vb.pp("model"))?;
 
@@ -823,7 +823,7 @@ mod tests {
         #[case] expected_top_log: &[f32; 3],
         #[case] expected_top_pos: &[u32; 3],
     ) -> Result<()> {
-        let dev = Device::cuda_if_available(0)?;
+        let dev = crate::candle_addons::gpu_if_available(0)?;
         let logits = Tensor::new(logits, &dev)?;
         let (top_logits, top_pos) = logits.topk_last_dim0(3_usize)?;
         assert_eq!(top_logits.to_vec1::<f32>()?, expected_top_log);
@@ -839,7 +839,7 @@ mod tests {
         #[case] expected_top_log: &[[f32; 2]; 2],
         #[case] expected_top_pos: &[[u32; 2]; 2],
     ) -> Result<()> {
-        let dev = Device::cuda_if_available(0)?;
+        let dev = crate::candle_addons::gpu_if_available(0)?;
         let logits = Tensor::new(logits, &dev)?;
         let top_k = 2_usize;
         let (top_logits, top_pos) = logits.topk_last_dim1(top_k)?;
@@ -850,7 +850,7 @@ mod tests {
 
     #[rstest]
     fn test_generate() -> Result<()> {
-        let dev = Device::cuda_if_available(0).unwrap();
+        let dev = crate::candle_addons::gpu_if_available(0).unwrap();
         let batch_token_ids = Tensor::new(&[[101_u32, 366, 100, 345], [101, 110, 322, 57]], &dev)?;
 
         let cfg = Config::gpt_sm_test();

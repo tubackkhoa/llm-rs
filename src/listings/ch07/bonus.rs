@@ -924,7 +924,7 @@ mod tests {
     use super::*;
     use crate::listings::ch07::AlpacaPromptFormatter;
     use anyhow::Result;
-    use candle_core::Device;
+
     use rstest::*;
     use tiktoken_rs::bpe_for_model;
 
@@ -1082,7 +1082,8 @@ mod tests {
             tokenizer,
         );
         let batch = vec![encoded_example];
-        let collator = PreferenceDataCollator::new().device(Device::cuda_if_available(0)?);
+        let collator =
+            PreferenceDataCollator::new().device(crate::candle_addons::gpu_if_available(0)?);
 
         // act
         let collated_item = collator.collate(batch)?;
@@ -1120,7 +1121,7 @@ mod tests {
         let batch_size = 2_usize;
         let allowed_max_length = 5_usize;
         let collator = PreferenceDataCollator::new()
-            .device(Device::cuda_if_available(0)?)
+            .device(crate::candle_addons::gpu_if_available(0)?)
             .allowed_max_length(Some(allowed_max_length));
         let shuffle = false;
         let drop_last = false;

@@ -45,12 +45,12 @@ impl Exercise for X1 {
 
     fn main(&self) -> Result<()> {
         use crate::listings::ch03::{SelfAttentionV1, SelfAttentionV2};
-        use candle_core::{DType, Device, Module, Tensor};
+        use candle_core::{DType, Module, Tensor};
         use candle_nn::{VarBuilder, VarMap};
 
         let (d_in, d_out) = (3_usize, 5_usize);
         let varmap = VarMap::new();
-        let dev = Device::cuda_if_available(0)?;
+        let dev = crate::candle_addons::gpu_if_available(0)?;
         let vb = VarBuilder::from_varmap(&varmap, DType::F32, &dev);
         let attn_v2_layer = SelfAttentionV2::new(d_in, d_out, false, vb.pp("attn_v2"))?;
         let attn_v1_layer = SelfAttentionV1 {
@@ -109,12 +109,12 @@ impl Exercise for X2 {
 
     fn main(&self) -> Result<()> {
         use crate::listings::ch03::MultiHeadAttentionWrapper;
-        use candle_core::{DType, Device, Module, Tensor};
+        use candle_core::{DType, Module, Tensor};
         use candle_nn::{VarBuilder, VarMap};
 
         let (d_in, d_out) = (3_usize, 1_usize); // set d_out to 1 to get desired final dim
         let varmap = VarMap::new();
-        let dev = Device::cuda_if_available(0)?;
+        let dev = crate::candle_addons::gpu_if_available(0)?;
         let vb = VarBuilder::from_varmap(&varmap, DType::F32, &dev);
         let num_heads = 2_usize;
         let mha =
@@ -170,12 +170,12 @@ impl Exercise for X3 {
 
     fn main(&self) -> Result<()> {
         use crate::listings::ch03::MultiHeadAttention;
-        use candle_core::{DType, Device};
+        use candle_core::DType;
         use candle_nn::{VarBuilder, VarMap};
 
         let (d_in, d_out, num_heads) = (768_usize, 768_usize, 12_usize); // set d_out to 1 to get desired final dim
         let varmap = VarMap::new();
-        let dev = Device::cuda_if_available(0)?;
+        let dev = crate::candle_addons::gpu_if_available(0)?;
         let vb = VarBuilder::from_varmap(&varmap, DType::F32, &dev);
         let mha = MultiHeadAttention::new(d_in, d_out, 0.0_f32, num_heads, false, vb.pp("mha"))?;
 

@@ -589,7 +589,7 @@ pub fn download_and_load_gpt2(
     cfg: Config,
     model_id: &str,
 ) -> Result<GPTModel> {
-    let dev = Device::cuda_if_available(0)?;
+    let dev = crate::candle_addons::gpu_if_available(0)?;
     let model = GPTModel::new(cfg, vb)?;
 
     // get weights from HF Hub
@@ -621,7 +621,7 @@ pub const HF_GPT2_MODEL_ID: &str = "openai-community/gpt2";
 ///     ch06::modify_out_head_for_classification
 /// };
 ///
-/// let dev = Device::cuda_if_available(0).unwrap();
+/// let dev = crate::candle_addons::gpu_if_available(0).unwrap();
 /// let varmap = VarMap::new();
 /// let vb = VarBuilder::from_varmap(&varmap, DType::F32, &dev);
 /// let cfg = Config::gpt_sm_test();
@@ -1150,7 +1150,7 @@ mod tests {
     #[rstest]
     fn test_modify_out_head_for_classification() -> Result<()> {
         // create typical language task model
-        let dev = Device::cuda_if_available(0)?;
+        let dev = crate::candle_addons::gpu_if_available(0)?;
         let varmap = VarMap::new();
         let vb = VarBuilder::from_varmap(&varmap, DType::F32, &dev);
         let cfg = Config::gpt_sm_test();
@@ -1171,7 +1171,11 @@ mod tests {
     fn test_calc_num_correct_batch() -> Result<()> {
         // create model
         let varmap = VarMap::new();
-        let vb = VarBuilder::from_varmap(&varmap, DType::F32, &Device::cuda_if_available(0)?);
+        let vb = VarBuilder::from_varmap(
+            &varmap,
+            DType::F32,
+            &crate::candle_addons::gpu_if_available(0)?,
+        );
         let cfg = Config::gpt_sm_test();
         let mut model = GPTModel::new(cfg, vb.pp("model"))?;
         // change to classification head
@@ -1193,7 +1197,11 @@ mod tests {
     fn test_calc_loss_batch() -> Result<()> {
         // create model
         let varmap = VarMap::new();
-        let vb = VarBuilder::from_varmap(&varmap, DType::F32, &Device::cuda_if_available(0)?);
+        let vb = VarBuilder::from_varmap(
+            &varmap,
+            DType::F32,
+            &crate::candle_addons::gpu_if_available(0)?,
+        );
         let cfg = Config::gpt_sm_test();
         let mut model = GPTModel::new(cfg, vb.pp("model"))?;
         // change to classification head

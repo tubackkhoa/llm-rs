@@ -4,6 +4,8 @@
 //! - `SequentialT`: a version of `Sequential` that is `ModuleT`
 //! - `TopK`: a trait for extracting top-k elements and positions of a `Tensor`
 use candle_core::{utils, Device, IndexOp, ModuleT, Result, Tensor};
+use std::collections::HashMap;
+use std::sync::{Mutex, OnceLock};
 
 /// A sequential layer combining multiple other layers.
 pub struct SequentialT {
@@ -86,7 +88,7 @@ impl TopK for Tensor {
         // get CUDA error sometimes when using `.arg_sort_last_dim`
         // moving to CPU to carry out the op
         let top_pos = self.to_device(&Device::Cpu)?.arg_sort_last_dim(false)?;
-        let top_pos = top_pos.to_device(&Device::cuda_if_available(0)?)?;
+        let top_pos = top_pos.to_device(&crate::candle_addons::gpu_if_available(0)?)?;
         let (batch_size, vocab_size) = top_pos.dims2()?;
         let top_pos = top_pos.i((.., ..top_k))?.flatten_all()?;
 
@@ -104,12 +106,28 @@ impl TopK for Tensor {
     }
 }
 
+static DEVICES: OnceLock<Mutex<HashMap<usize, Device>>> = OnceLock::new();
+
 pub fn gpu_if_available(ordinal: usize) -> Result<Device> {
-    if utils::cuda_is_available() {
-        Device::new_cuda(ordinal)
-    } else if utils::metal_is_available() {
-        Device::new_metal(ordinal)
-    } else {
-        Ok(Device::Cpu)
+    let devices = DEVICES.get_or_init(|| Mutex::new(HashMap::new()));
+
+    let mut devices = devices
+        .lock()
+        .map_err(|e| candle_core::Error::Msg(format!("Device cache lock poisoned: {}", e)))?;
+
+    if let Some(device) = devices.get(&ordinal) {
+        return Ok(device.clone());
     }
+
+    let device = if utils::cuda_is_available() {
+        Device::new_cuda(ordinal)?
+    } else if utils::metal_is_available() {
+        Device::new_metal(ordinal)?
+    } else {
+        Device::Cpu
+    };
+
+    devices.insert(ordinal, device.clone());
+
+    Ok(device)
 }

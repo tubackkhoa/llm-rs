@@ -37,7 +37,7 @@ impl SelfAttentionV1 {
     /// use candle_nn::{VarMap, VarBuilder};
     /// use llms_from_scratch_rs::listings::ch03::SelfAttentionV1;
     ///
-    /// let dev = Device::cuda_if_available(0).unwrap();
+    /// let dev = crate::candle_addons::gpu_if_available(0).unwrap();
     /// let varmap = VarMap::new();
     /// let vb = VarBuilder::from_varmap(&varmap, DType::F32, &dev);
     /// let (d_in, d_out) = (3_usize, 5_usize);
@@ -100,7 +100,7 @@ impl SelfAttentionV2 {
     /// use candle_nn::{VarMap, VarBuilder};
     /// use llms_from_scratch_rs::listings::ch03::SelfAttentionV2;
     ///
-    /// let dev = Device::cuda_if_available(0).unwrap();
+    /// let dev = crate::candle_addons::gpu_if_available(0).unwrap();
     /// let varmap = VarMap::new();
     /// let vb = VarBuilder::from_varmap(&varmap, DType::F32, &dev);
     /// let (d_in, d_out) = (3_usize, 5_usize);
@@ -163,7 +163,7 @@ impl CausalAttention {
     /// use candle_nn::{VarMap, VarBuilder};
     /// use llms_from_scratch_rs::listings::ch03::CausalAttention;
     ///
-    /// let dev = Device::cuda_if_available(0).unwrap();
+    /// let dev = crate::candle_addons::gpu_if_available(0).unwrap();
     /// let varmap = VarMap::new();
     /// let vb = VarBuilder::from_varmap(&varmap, DType::F32, &dev);
     /// let (d_in, d_out) = (3_usize, 5_usize);
@@ -248,7 +248,7 @@ impl MultiHeadAttentionWrapper {
     /// use candle_nn::{VarMap, VarBuilder};
     /// use llms_from_scratch_rs::listings::ch03::MultiHeadAttentionWrapper;
     ///
-    /// let dev = Device::cuda_if_available(0).unwrap();
+    /// let dev = crate::candle_addons::gpu_if_available(0).unwrap();
     /// let varmap = VarMap::new();
     /// let vb = VarBuilder::from_varmap(&varmap, DType::F32, &dev);
     /// let (d_in, d_out, num_heads) = (3_usize, 6_usize, 3_usize);
@@ -317,7 +317,7 @@ impl MultiHeadAttention {
     /// use candle_nn::{VarMap, VarBuilder};
     /// use llms_from_scratch_rs::listings::ch03::MultiHeadAttention;
     ///
-    /// let dev = Device::cuda_if_available(0).unwrap();
+    /// let dev = crate::candle_addons::gpu_if_available(0).unwrap();
     /// let varmap = VarMap::new();
     /// let vb = VarBuilder::from_varmap(&varmap, DType::F32, &dev);
     /// let (d_in, d_out, num_heads) = (3_usize, 6_usize, 2_usize);
@@ -458,13 +458,13 @@ impl ModuleT for MultiHeadAttention {
 mod tests {
     use super::*;
     use anyhow::Result;
-    use candle_core::{DType, Device};
+    use candle_core::{DType, };
     use candle_nn::{VarBuilder, VarMap};
     use rstest::*;
 
     #[fixture]
     pub fn vb() -> VarBuilder<'static> {
-        let dev = Device::cuda_if_available(0).unwrap();
+        let dev = crate::candle_addons::gpu_if_available(0).unwrap();
         let varmap = VarMap::new();
         VarBuilder::from_varmap(&varmap, DType::F32, &dev)
     }

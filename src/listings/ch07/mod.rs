@@ -580,7 +580,7 @@ impl<C: CustomCollator<BatchItem = Tensor> + Clone> InstructionDataLoader<C> {
     /// Creates a new `InstructionDataLoader`.
     ///
     /// ```rust
-    /// use candle_core::Device;
+    ///
     /// use llms_from_scratch_rs::listings::ch07::{
     ///     AlpacaPromptFormatter, InstructionDataCollator, InstructionDataset,
     ///     InstructionDataLoader, InstructionResponseExample
@@ -1001,8 +1001,9 @@ mod tests {
     #[rstest]
     pub fn test_instruction_collator() -> Result<()> {
         // arrange
-        let collator = InstructionDataCollator::new().device(Device::cuda_if_available(0)?);
-        let device = Device::cuda_if_available(0)?;
+        let collator =
+            InstructionDataCollator::new().device(crate::candle_addons::gpu_if_available(0)?);
+        let device = crate::candle_addons::gpu_if_available(0)?;
         let inputs_1 = Tensor::new(&[1_u32, 2, 3], &device)?;
         let inputs_2 = Tensor::new(&[4_u32, 5, 6, 7], &device)?;
         let batch = vec![inputs_1, inputs_2];
@@ -1034,7 +1035,8 @@ mod tests {
             InstructionDataset::new(instruction_data, tokenizer, &prompt_formatter);
         let iter = InstructionDatasetIter::new(instruction_dataset.clone(), false);
         let batch_size = 2_usize;
-        let collator = InstructionDataCollator::new().device(Device::cuda_if_available(0)?);
+        let collator =
+            InstructionDataCollator::new().device(crate::candle_addons::gpu_if_available(0)?);
         let mut instruct_batcher = InstructionDataBatcher::new(iter, collator)
             .batch_size(batch_size)
             .return_last_incomplete_batch(false);
@@ -1059,7 +1061,7 @@ mod tests {
         let batch_size = 2_usize;
         let allowed_max_length = 10_usize;
         let collator = InstructionDataCollator::new()
-            .device(Device::cuda_if_available(0)?)
+            .device(crate::candle_addons::gpu_if_available(0)?)
             .allowed_max_length(Some(allowed_max_length));
         let shuffle = false;
         let drop_last = false;

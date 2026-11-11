@@ -2,7 +2,7 @@ use anyhow::Result;
 use clap::{Parser, Subcommand};
 use comfy_table::{ContentArrangement, Table};
 use itertools::Itertools;
-use llms_from_scratch_rs::{examples, exercises, Example, Exercise};
+use llms_from_scratch_rs::{examples, exercises, listings, Example, Exercise};
 use std::collections::HashMap;
 use std::sync::LazyLock;
 
@@ -151,6 +151,8 @@ enum Commands {
         /// The exercise to run
         id: String,
     },
+    /// Prepare Spam dataset
+    PrepareSpam,
     /// List examples and exercises
     List {
         #[clap(long, action)]
@@ -205,6 +207,15 @@ fn main() -> Result<()> {
                 }
                 println!("EXERCISES:\n{exercises_table}");
             }
+            Ok(())
+        }
+        Commands::PrepareSpam => {
+            println!("Downloading and preparing Spam dataset...");
+
+            listings::apdx_e::download_and_prepare_spam_dataset()?;
+
+            println!("Spam dataset prepared successfully!");
+
             Ok(())
         }
     }

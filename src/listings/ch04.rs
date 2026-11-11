@@ -191,7 +191,7 @@ impl LayerNorm {
     /// use candle_nn::{VarBuilder, VarMap};
     /// use llms_from_scratch_rs::listings::ch04::{Config, LayerNorm};
     ///
-    /// let dev = Device::cuda_if_available(0).unwrap();
+    /// let dev = crate::candle_addons::gpu_if_available(0).unwrap();
     /// let varmap = VarMap::new();
     /// let vb = VarBuilder::from_varmap(&varmap, DType::F32, &dev);
     ///
@@ -274,7 +274,7 @@ impl FeedForward {
     /// use candle_nn::{VarBuilder, VarMap};
     /// use llms_from_scratch_rs::listings::ch04::{Config, FeedForward};
     ///
-    /// let dev = Device::cuda_if_available(0).unwrap();
+    /// let dev = crate::candle_addons::gpu_if_available(0).unwrap();
     /// let varmap = VarMap::new();
     /// let vb = VarBuilder::from_varmap(&varmap, DType::F32, &dev);
     ///
@@ -387,7 +387,7 @@ impl TransformerBlock {
     /// use candle_nn::{VarBuilder, VarMap};
     /// use llms_from_scratch_rs::listings::ch04::{Config, TransformerBlock};
     ///
-    /// let dev = Device::cuda_if_available(0).unwrap();
+    /// let dev = crate::candle_addons::gpu_if_available(0).unwrap();
     /// let varmap = VarMap::new();
     /// let vb = VarBuilder::from_varmap(&varmap, DType::F32, &dev);
     ///
@@ -554,7 +554,7 @@ impl GPTModel {
     /// use candle_nn::{VarBuilder, VarMap};
     /// use llms_from_scratch_rs::listings::ch04::{Config, GPTModel};
     ///
-    /// let dev = Device::cuda_if_available(0).unwrap();
+    /// let dev = crate::candle_addons::gpu_if_available(0).unwrap();
     /// let varmap = VarMap::new();
     /// let vb = VarBuilder::from_varmap(&varmap, DType::F32, &dev);
     ///
@@ -694,14 +694,14 @@ mod tests {
 
     #[fixture]
     pub fn vb() -> VarBuilder<'static> {
-        let dev = Device::cuda_if_available(0).unwrap();
+        let dev = crate::candle_addons::gpu_if_available(0).unwrap();
         let varmap = VarMap::new();
         VarBuilder::from_varmap(&varmap, DType::F32, &dev)
     }
 
     #[fixture]
     pub fn batch_token_ids() -> Tensor {
-        let dev = Device::cuda_if_available(0).unwrap();
+        let dev = crate::candle_addons::gpu_if_available(0).unwrap();
         Tensor::new(&[[101_u32, 366, 100, 345], [101, 110, 322, 57]], &dev).unwrap()
     }
 
@@ -773,7 +773,7 @@ mod tests {
 
     #[rstest]
     fn test_gelu_impl() -> Result<()> {
-        let dev = Device::cuda_if_available(0)?;
+        let dev = crate::candle_addons::gpu_if_available(0)?;
         let batch_example = Tensor::rand(0f32, 1f32, (2_usize, 3_usize), &dev)?;
 
         // testing manual impl

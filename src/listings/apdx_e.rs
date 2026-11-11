@@ -134,7 +134,7 @@ impl LoRALayer {
     /// use candle_nn::{VarBuilder, VarMap};
     /// use llms_from_scratch_rs::listings::apdx_e::LoRALayer;
     ///
-    /// let dev = Device::cuda_if_available(0).unwrap();
+    /// let dev = crate::candle_addons::gpu_if_available(0).unwrap();
     /// let varmap = VarMap::new();
     /// let vb = VarBuilder::from_varmap(&varmap, DType::F32, &dev);
     ///
@@ -194,7 +194,7 @@ impl LinearWithLoRA {
     /// use llms_from_scratch_rs::listings::ch04::Config;
     /// use llms_from_scratch_rs::listings::apdx_e::LinearWithLoRA;
     ///
-    /// let dev = Device::cuda_if_available(0).unwrap();
+    /// let dev = crate::candle_addons::gpu_if_available(0).unwrap();
     /// let varmap = VarMap::new();
     /// let vb = VarBuilder::from_varmap(&varmap, DType::F32, &dev);
     ///
@@ -270,7 +270,7 @@ impl MultiHeadAttentionWithLoRA {
     /// use llms_from_scratch_rs::listings::ch03::MultiHeadAttention;
     /// use llms_from_scratch_rs::listings::apdx_e::MultiHeadAttentionWithLoRA;
     ///
-    /// let dev = Device::cuda_if_available(0).unwrap();
+    /// let dev = crate::candle_addons::gpu_if_available(0).unwrap();
     /// let varmap = VarMap::new();
     /// let vb = VarBuilder::from_varmap(&varmap, DType::F32, &dev);
     ///
@@ -437,7 +437,7 @@ impl FeedForwardWithLoRA {
     /// use llms_from_scratch_rs::listings::ch04::{Config, FeedForward};
     /// use llms_from_scratch_rs::listings::apdx_e::FeedForwardWithLoRA;
     ///
-    /// let dev = Device::cuda_if_available(0).unwrap();
+    /// let dev = crate::candle_addons::gpu_if_available(0).unwrap();
     /// let varmap = VarMap::new();
     /// let vb = VarBuilder::from_varmap(&varmap, DType::F32, &dev);
     ///
@@ -525,7 +525,7 @@ impl TransformerBlockWithLoRA {
     /// use llms_from_scratch_rs::listings::ch04::{Config, TransformerBlock};
     /// use llms_from_scratch_rs::listings::apdx_e::TransformerBlockWithLoRA;
     ///
-    /// let dev = Device::cuda_if_available(0).unwrap();
+    /// let dev = crate::candle_addons::gpu_if_available(0).unwrap();
     /// let varmap = VarMap::new();
     /// let vb = VarBuilder::from_varmap(&varmap, DType::F32, &dev);
     ///
@@ -658,7 +658,7 @@ impl GPTModelWithLoRA {
     /// use llms_from_scratch_rs::listings::ch04::{Config, GPTModel};
     /// use llms_from_scratch_rs::listings::apdx_e::GPTModelWithLoRA;
     ///
-    /// let dev = Device::cuda_if_available(0).unwrap();
+    /// let dev = crate::candle_addons::gpu_if_available(0).unwrap();
     /// let varmap = VarMap::new();
     /// let vb = VarBuilder::from_varmap(&varmap, DType::F32, &dev);
     ///
@@ -756,7 +756,7 @@ mod tests {
 
     #[fixture]
     pub fn vb() -> VarBuilder<'static> {
-        let dev = Device::cuda_if_available(0).unwrap();
+        let dev = crate::candle_addons::gpu_if_available(0).unwrap();
         let varmap = VarMap::new();
         VarBuilder::from_varmap(&varmap, DType::F32, &dev)
     }
@@ -1046,7 +1046,7 @@ mod tests {
             GPTModelWithLoRA::from_gpt_model(model.clone(), rank, alpha, vb.pp("model"))?;
 
         // create batch
-        let dev = Device::cuda_if_available(0).unwrap();
+        let dev = crate::candle_addons::gpu_if_available(0).unwrap();
         let batch_token_ids = Tensor::new(&[[101_u32, 366, 100, 345], [101, 110, 322, 57]], &dev)?;
 
         // since this is only init these should be the same

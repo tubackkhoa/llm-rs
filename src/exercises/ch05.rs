@@ -98,7 +98,7 @@ impl Exercise for X2 {
             ch04::{Config, GPTModel},
             ch05::{generate, text_to_token_ids, token_ids_to_text},
         };
-        use candle_core::{DType, Device};
+        use candle_core::DType;
         use candle_nn::{VarBuilder, VarMap};
         use itertools::iproduct;
         use rand::{rngs::StdRng, SeedableRng};
@@ -106,7 +106,11 @@ impl Exercise for X2 {
 
         // construct model
         let varmap = VarMap::new();
-        let vb = VarBuilder::from_varmap(&varmap, DType::F32, &Device::cuda_if_available(0)?);
+        let vb = VarBuilder::from_varmap(
+            &varmap,
+            DType::F32,
+            &crate::candle_addons::gpu_if_available(0)?,
+        );
         let cfg = Config::gpt2_124m();
         let model = GPTModel::new(Config::gpt2_124m(), vb.pp("model"))?;
 
@@ -175,14 +179,18 @@ impl Exercise for X3 {
             ch04::{Config, GPTModel},
             ch05::{generate, text_to_token_ids},
         };
-        use candle_core::{DType, Device, Tensor};
+        use candle_core::{DType, Tensor};
         use candle_nn::{VarBuilder, VarMap};
         use rand::{rngs::StdRng, SeedableRng};
         use tiktoken_rs::bpe_for_model;
 
         // construct model
         let varmap = VarMap::new();
-        let vb = VarBuilder::from_varmap(&varmap, DType::F32, &Device::cuda_if_available(0)?);
+        let vb = VarBuilder::from_varmap(
+            &varmap,
+            DType::F32,
+            &crate::candle_addons::gpu_if_available(0)?,
+        );
         let cfg = Config::gpt2_124m();
         let model = GPTModel::new(Config::gpt2_124m(), vb.pp("model"))?;
 
@@ -262,13 +270,17 @@ impl Exercise for X4 {
                 ch05::train_model_simple,
             },
         };
-        use candle_core::{DType, Device};
+        use candle_core::DType;
         use candle_nn::{AdamW, Optimizer, ParamsAdamW, VarBuilder, VarMap};
         use tiktoken_rs::bpe_for_model;
 
         // construct model
         let mut varmap = VarMap::new();
-        let vb = VarBuilder::from_varmap(&varmap, DType::F32, &Device::cuda_if_available(0)?);
+        let vb = VarBuilder::from_varmap(
+            &varmap,
+            DType::F32,
+            &crate::candle_addons::gpu_if_available(0)?,
+        );
         let cfg = Config::gpt2_124m();
         let model = GPTModel::new(cfg, vb.pp("model"))?;
 
@@ -347,11 +359,11 @@ impl Exercise for X5 {
                 ch05::{calc_loss_loader, load_weights_into_gpt},
             },
         };
-        use candle_core::{DType, Device};
+        use candle_core::DType;
         use candle_nn::{VarBuilder, VarMap};
         use hf_hub::HFClientSync;
 
-        let dev = Device::cuda_if_available(0)?;
+        let dev = crate::candle_addons::gpu_if_available(0)?;
 
         // download openai weights
         let client = HFClientSync::new()?;
@@ -421,13 +433,13 @@ impl Exercise for X6 {
             ch04::{Config, GPTModel},
             ch05::{generate, load_weights_into_gpt, text_to_token_ids, token_ids_to_text},
         };
-        use candle_core::{DType, Device};
+        use candle_core::DType;
         use candle_nn::{VarBuilder, VarMap};
         use hf_hub::{split_id, HFClientSync};
         use rand::{rngs::StdRng, SeedableRng};
         use tiktoken_rs::bpe_for_model;
 
-        let dev = Device::cuda_if_available(0)?;
+        let dev = crate::candle_addons::gpu_if_available(0)?;
         let varmap = VarMap::new();
         let vb = VarBuilder::from_varmap(&varmap, DType::F32, &dev);
         let mut cfg = Config::gpt2_xlarge();
@@ -443,7 +455,7 @@ impl Exercise for X6 {
             .download_file()
             .filename("model.safetensors")
             .send()?;
-        let weights = candle_core::safetensors::load(weights, &Device::Cpu)?;
+        let weights = candle_core::safetensors::load(weights, &candle_core::Device::Cpu)?;
 
         // load weights
         load_weights_into_gpt(&varmap, weights, Some("model"), cfg.n_layers)?;

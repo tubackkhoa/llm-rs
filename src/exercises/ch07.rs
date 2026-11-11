@@ -38,7 +38,7 @@ impl X1 {
             InstructionDataLoader, InstructionDataset, Phi3PromptFormatter, DATA_DIR,
             INSTRUCTION_DATA_FILENAME, INSTRUCTION_DATA_URL,
         };
-        use candle_core::Device;
+        
         use std::path::Path;
         use tiktoken_rs::bpe_for_model;
 
@@ -58,7 +58,7 @@ impl X1 {
         // create loaders
         let batch_size = 5_usize;
         let collator = InstructionDataCollator::new()
-            .device(Device::cuda_if_available(0)?)
+            .device(crate::candle_addons::gpu_if_available(0)?)
             .allowed_max_length(Some(1024_usize));
         let train_loader =
             InstructionDataLoader::new(train_dataset, batch_size, true, true, collator.clone());
@@ -104,7 +104,7 @@ impl Exercise for X1 {
                 DEFAULT_IGNORE_INDEX,
             },
         };
-        use candle_core::{DType, Device};
+        use candle_core::DType;
         use candle_nn::{AdamW, Optimizer, ParamsAdamW, VarBuilder, VarMap};
         use ndarray::linspace;
         use std::path::Path;
@@ -115,7 +115,11 @@ impl Exercise for X1 {
         let mut cfg = Config::gpt2_124m(); // use `gpt2_medium()` for med instead
         cfg.qkv_bias = true;
         let varmap = VarMap::new();
-        let vb = VarBuilder::from_varmap(&varmap, DType::F32, &Device::cuda_if_available(0)?);
+        let vb = VarBuilder::from_varmap(
+            &varmap,
+            DType::F32,
+            &crate::candle_addons::gpu_if_available(0)?,
+        );
         let model = download_and_load_gpt2(&varmap, vb.pp("model"), cfg, model_id)?;
 
         // get data loaders that is built on a dataset that used phi3 prompt format style
@@ -201,7 +205,7 @@ impl X2 {
             INSTRUCTION_DATA_FILENAME, INSTRUCTION_DATA_URL,
         };
         use addons::{InstructionDataLoader, InstructionDataset, MaskedInstructionCollator};
-        use candle_core::Device;
+        
         use std::path::Path;
         use tiktoken_rs::bpe_for_model;
 
@@ -221,7 +225,7 @@ impl X2 {
         // create loaders
         let batch_size = 5_usize;
         let collator = MaskedInstructionCollator::new()
-            .device(Device::cuda_if_available(0)?)
+            .device(crate::candle_addons::gpu_if_available(0)?)
             .allowed_max_length(Some(1024_usize));
         let train_loader =
             InstructionDataLoader::new(train_dataset, batch_size, true, true, collator.clone());
@@ -269,7 +273,7 @@ impl Exercise for X2 {
                 DEFAULT_IGNORE_INDEX,
             },
         };
-        use candle_core::{DType, Device};
+        use candle_core::DType;
         use candle_nn::{AdamW, Optimizer, ParamsAdamW, VarBuilder, VarMap};
         use ndarray::linspace;
         use std::path::Path;
@@ -280,7 +284,11 @@ impl Exercise for X2 {
         let mut cfg = Config::gpt2_124m(); // use `gpt2_medium()` for med instead
         cfg.qkv_bias = true;
         let varmap = VarMap::new();
-        let vb = VarBuilder::from_varmap(&varmap, DType::F32, &Device::cuda_if_available(0)?);
+        let vb = VarBuilder::from_varmap(
+            &varmap,
+            DType::F32,
+            &crate::candle_addons::gpu_if_available(0)?,
+        );
         let model = download_and_load_gpt2(&varmap, vb.pp("model"), cfg, model_id)?;
 
         let (train_loader, val_loader, _test_loader) = self.get_data_loaders(false)?;
@@ -373,7 +381,7 @@ impl X3 {
             download_and_load_file, partition_data, DataLoader, InstructionDataCollator,
             InstructionDataLoader, InstructionDataset, DATA_DIR,
         };
-        use candle_core::Device;
+
         use std::path::Path;
         use tiktoken_rs::bpe_for_model;
 
@@ -394,7 +402,7 @@ impl X3 {
 
         // create loaders
         let collator = InstructionDataCollator::new()
-            .device(Device::cuda_if_available(0)?)
+            .device(crate::candle_addons::gpu_if_available(0)?)
             .allowed_max_length(allowed_max_length);
         let train_loader =
             InstructionDataLoader::new(train_dataset, batch_size, true, true, collator.clone());
@@ -450,7 +458,7 @@ impl Exercise for X3 {
                 DEFAULT_IGNORE_INDEX,
             },
         };
-        use candle_core::{DType, Device};
+        use candle_core::DType;
         use candle_nn::{AdamW, Optimizer, ParamsAdamW, VarBuilder, VarMap};
         use ndarray::linspace;
         use std::path::Path;
@@ -461,7 +469,11 @@ impl Exercise for X3 {
         let mut cfg = Config::gpt2_124m();
         cfg.qkv_bias = true;
         let varmap = VarMap::new();
-        let vb = VarBuilder::from_varmap(&varmap, DType::F32, &Device::cuda_if_available(0)?);
+        let vb = VarBuilder::from_varmap(
+            &varmap,
+            DType::F32,
+            &crate::candle_addons::gpu_if_available(0)?,
+        );
         let model = download_and_load_gpt2(&varmap, vb.pp("model"), cfg, model_id)?;
 
         // get data loaders that is built on a dataset that used phi3 prompt format style
@@ -563,7 +575,7 @@ impl Exercise for X4 {
                 DEFAULT_IGNORE_INDEX,
             },
         };
-        use candle_core::{DType, Device, Var};
+        use candle_core::{DType, Var};
         use candle_nn::{AdamW, Optimizer, ParamsAdamW, VarBuilder, VarMap};
         use ndarray::linspace;
         use std::path::Path;
@@ -574,7 +586,11 @@ impl Exercise for X4 {
         let mut cfg = Config::gpt2_124m(); // use `gpt2_medium()` for med instead
         cfg.qkv_bias = true;
         let varmap = VarMap::new();
-        let vb = VarBuilder::from_varmap(&varmap, DType::F32, &Device::cuda_if_available(0)?);
+        let vb = VarBuilder::from_varmap(
+            &varmap,
+            DType::F32,
+            &crate::candle_addons::gpu_if_available(0)?,
+        );
         let model = download_and_load_gpt2(&varmap, vb.pp("model"), cfg, model_id)?;
 
         // convert to LoRA model
@@ -770,7 +786,7 @@ pub mod addons {
                 let (encoded, instruction_length) = self.dataset.get_item_at_index(idx).unwrap();
 
                 // turn into Tensors and return
-                let dev = Device::cuda_if_available(0).unwrap();
+                let dev = crate::candle_addons::gpu_if_available(0).unwrap();
                 let inputs_tensor = Tensor::new(&encoded[..], &dev);
                 let instruction_len_tensor = Tensor::new(&[*instruction_length], &dev);
                 Some(candle_core::error::zip(
@@ -1016,8 +1032,9 @@ pub mod addons {
         #[rstest]
         pub fn test_instruction_collator() -> Result<()> {
             // arrange
-            let collator = MaskedInstructionCollator::new().device(Device::cuda_if_available(0)?);
-            let device = Device::cuda_if_available(0)?;
+            let collator =
+                MaskedInstructionCollator::new().device(crate::candle_addons::gpu_if_available(0)?);
+            let device = crate::candle_addons::gpu_if_available(0)?;
             let inputs_1 = Tensor::new(&[1_u32, 2, 3, 4, 5], &device)?;
             let instruction_len_1 = Tensor::new(&[3_u32], &device)?;
             let inputs_2 = Tensor::new(&[8_u32, 9, 10, 11, 12, 13, 14], &device)?;
@@ -1058,7 +1075,7 @@ pub mod addons {
             let batch_size = 2_usize;
             let allowed_max_length = 10_usize;
             let collator = MaskedInstructionCollator::new()
-                .device(Device::cuda_if_available(0)?)
+                .device(crate::candle_addons::gpu_if_available(0)?)
                 .allowed_max_length(Some(allowed_max_length));
             let shuffle = false;
             let drop_last = false;

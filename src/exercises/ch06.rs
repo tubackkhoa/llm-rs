@@ -42,7 +42,7 @@ impl Exercise for X1 {
             },
         };
         use anyhow::anyhow;
-        use candle_core::{DType, Device, Var};
+        use candle_core::{DType, Var};
         use candle_nn::{AdamW, Optimizer, ParamsAdamW, VarBuilder, VarMap};
         use std::ops::Not;
         use std::path::Path;
@@ -108,7 +108,11 @@ impl Exercise for X1 {
         let mut cfg = Config::gpt2_124m();
         cfg.qkv_bias = true;
         let varmap = VarMap::new();
-        let vb = VarBuilder::from_varmap(&varmap, DType::F32, &Device::cuda_if_available(0)?);
+        let vb = VarBuilder::from_varmap(
+            &varmap,
+            DType::F32,
+            &crate::candle_addons::gpu_if_available(0)?,
+        );
         let mut model = download_and_load_gpt2(&varmap, vb.pp("model"), cfg, HF_GPT2_MODEL_ID)?;
         modify_out_head_for_classification(&mut model, cfg, 2_usize, &varmap, vb.pp("model"))?;
 
@@ -206,14 +210,18 @@ impl Exercise for X2 {
                 train_classifier_simple, HF_GPT2_MODEL_ID,
             },
         };
-        use candle_core::{DType, Device};
+        use candle_core::DType;
         use candle_nn::{AdamW, Optimizer, ParamsAdamW, VarBuilder, VarMap};
 
         // get gpt model with classification head
         let mut cfg = Config::gpt2_124m();
         cfg.qkv_bias = true;
         let varmap = VarMap::new();
-        let vb = VarBuilder::from_varmap(&varmap, DType::F32, &Device::cuda_if_available(0)?);
+        let vb = VarBuilder::from_varmap(
+            &varmap,
+            DType::F32,
+            &crate::candle_addons::gpu_if_available(0)?,
+        );
         let mut model = download_and_load_gpt2(&varmap, vb.pp("model"), cfg, HF_GPT2_MODEL_ID)?;
         modify_out_head_for_classification(&mut model, cfg, 2_usize, &varmap, vb.pp("model"))?;
 
@@ -302,14 +310,18 @@ impl Exercise for X3 {
                 train_classifier_simple, HF_GPT2_MODEL_ID,
             },
         };
-        use candle_core::{DType, Device, Var};
+        use candle_core::{DType, Var};
         use candle_nn::{AdamW, Optimizer, ParamsAdamW, VarBuilder, VarMap};
 
         // get gpt model with classification head
         let mut cfg = Config::gpt2_124m();
         cfg.qkv_bias = true;
         let varmap = VarMap::new();
-        let vb = VarBuilder::from_varmap(&varmap, DType::F32, &Device::cuda_if_available(0)?);
+        let vb = VarBuilder::from_varmap(
+            &varmap,
+            DType::F32,
+            &crate::candle_addons::gpu_if_available(0)?,
+        );
         let mut model = download_and_load_gpt2(&varmap, vb.pp("model"), cfg, HF_GPT2_MODEL_ID)?;
         modify_out_head_for_classification(&mut model, cfg, 2_usize, &varmap, vb.pp("model"))?;
 

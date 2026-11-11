@@ -35,11 +35,11 @@ impl Exercise for X1 {
 
     fn main(&self) -> Result<()> {
         use crate::listings::ch04::{Config, TransformerBlock};
-        use candle_core::{DType, Device};
+        use candle_core::DType;
         use candle_nn::{VarBuilder, VarMap};
 
         // create model
-        let dev = Device::cuda_if_available(0)?;
+        let dev = crate::candle_addons::gpu_if_available(0)?;
         let varmap = VarMap::new();
         let vb = VarBuilder::from_varmap(&varmap, DType::F32, &dev);
         let _ = TransformerBlock::new(Config::gpt2_124m(), vb)?;
@@ -102,7 +102,7 @@ impl Exercise for X2 {
 
     fn main(&self) -> Result<()> {
         use crate::listings::ch04::{Config, GPTModel};
-        use candle_core::{DType, Device};
+        use candle_core::DType;
         use candle_nn::{VarBuilder, VarMap};
 
         let configs = &[
@@ -114,7 +114,7 @@ impl Exercise for X2 {
 
         for (mdl_name, cfg) in configs.iter() {
             // construct model which stores the vars in the varmap
-            let dev = Device::cuda_if_available(0)?;
+            let dev = crate::candle_addons::gpu_if_available(0)?;
             let varmap = VarMap::new();
             let vb = VarBuilder::from_varmap(&varmap, DType::F32, &dev);
             let _ = GPTModel::new(*cfg, vb)?;
@@ -186,11 +186,11 @@ impl Exercise for X3 {
 
     fn main(&self) -> Result<()> {
         use crate::listings::ch04::GPTModel;
-        use candle_core::{DType, Device, IndexOp, ModuleT, Tensor};
+        use candle_core::{DType, IndexOp, ModuleT, Tensor};
         use candle_nn::{VarBuilder, VarMap};
 
         // create model
-        let dev = Device::cuda_if_available(0)?;
+        let dev = crate::candle_addons::gpu_if_available(0)?;
         let varmap = VarMap::new();
         let vb = VarBuilder::from_varmap(&varmap, DType::F32, &dev);
         let model = GPTModel::new_v2(addons::ConfigV2::gpt_config_124m(), vb)?;
