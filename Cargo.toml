@@ -22,7 +22,7 @@ opt-level = 2
 [dependencies]
 anyhow = "1.0.102"
 bytes = "1.11.1"
-candle-core = "0.9"
+candle-core = "0.11"
 candle-datasets = "0.9"
 candle-nn = "0.9"
 clap = { version = "4.6.1", features = ["derive"] }
